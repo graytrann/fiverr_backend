@@ -5,27 +5,9 @@ import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
-  // create(createAuthDto: CreateAuthDto) {
-  //   return 'This action adds a new auth';
-  // }
-
-  // findAll() {
-  //   return `This action returns all auth`;
-  // }
-
-  // findOne(id: number) {
-  //   return `This action returns a #${id} auth`;
-  // }
-
-  // update(id: number, updateAuthDto: UpdateAuthDto) {
-  //   return `This action updates a #${id} auth`;
-  // }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} auth`;
-  // }
   prisma = new PrismaClient();
 
+  // ĐĂNG KÝ
   async signUp(body: {
     uname: string;
     email: string;
@@ -66,5 +48,27 @@ export class AuthService {
 
     // Trả về thông tin của người dùng mới tạo
     return 'Người dùng đã được tạo mới';
+  }
+
+  // ĐĂNG NHẬP
+  async signIn(body: { email: string; pass_word: string }): Promise<string> {
+    const user = await this.prisma.nguoiDung.findFirst({
+      where: {
+        email: body.email,
+      },
+    });
+
+    if (!user) {
+      // Người dùng không tồn tại
+      return 'Người dùng không tồn tại';
+    }
+
+    if (user.pass_word !== body.pass_word) {
+      // Mật khẩu không khớp
+      return 'Mật khẩu không đúng';
+    }
+
+    // Đăng nhập thành công
+    return 'Đăng nhập thành công';
   }
 }
