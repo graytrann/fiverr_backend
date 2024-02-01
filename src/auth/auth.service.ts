@@ -2,9 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { PrismaClient } from '@prisma/client';
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcryptjs';
+
+// Hàm này được sử dụng để kiểm tra mật khẩu trên client với mật khẩu đã mã hóa trong cơ sở dữ liệu
+async function comparePasswords(
+  clientPassword: string,
+  hashedPassword: string,
+): Promise<boolean> {
+  return bcrypt.compare(clientPassword, hashedPassword);
+}
 
 @Injectable()
 export class AuthService {
+  constructor(private jwtService: JwtService) {}
   prisma = new PrismaClient();
 
   // ĐĂNG KÝ
@@ -31,12 +42,14 @@ export class AuthService {
       return 'Người dùng đã tồn tại';
     }
 
+    // Mã hóa mật khẩu trước khi lưu vào cơ sở dữ liệu
+    const hashedPassword = await bcrypt.hash(body.pass_word, 10);
     // Nếu người dùng không tồn tại, tạo mới người dùng
     const newUser = await this.prisma.nguoiDung.create({
       data: {
         uname: body.uname,
         email: body.email,
-        pass_word: body.pass_word,
+        pass_word: hashedPassword,
         phone: body.phone,
         birth_day: body.birthday,
         gender: body.gender,
@@ -63,12 +76,25 @@ export class AuthService {
       return 'Người dùng không tồn tại';
     }
 
-    if (user.pass_word !== body.pass_word) {
-      // Mật khẩu không khớp
+    // Sử dụng hàm comparePasswords để kiểm tra mật khẩu khi đăng nhập
+    const isPasswordCorrect = await comparePasswords(
+      body.pass_word,
+      user.pass_word,
+    );
+
+    if (isPasswordCorrect) {
+      // Mật khẩu đúng, thực hiện đăng nhập
+
+      let token = await this.jwtService.signAsync(
+        { data: { userId: user.id } },
+        { expiresIn: '60m', secret: 'BI_MAT' },
+      );
+
+      // Đăng nhập thành công
+      return `Đăng nhập thành công ${token}`;
+    } else {
+      // Mật khẩu không đúng
       return 'Mật khẩu không đúng';
     }
-
-    // Đăng nhập thành công
-    return 'Đăng nhập thành công';
   }
 }
