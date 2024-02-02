@@ -32,7 +32,7 @@ export class JobTypeService {
     return jobType;
   }
 
-  // LẤY JOB CHI TIẾT
+  // UPDATE JOB
   async updateJobType(
     jobTypeId: number,
     updatedData: Partial<LoaiCongViec>,
@@ -42,5 +42,32 @@ export class JobTypeService {
       data: updatedData,
     });
     return updatedJobType;
+  }
+
+  // XÓA JOB CHI TIẾT
+  async deteleJobType(jobTypeId: number): Promise<string> {
+    try {
+      const existingJobType = await this.prisma.loaiCongViec.findUnique({
+        where: {
+          id: jobTypeId,
+        },
+      });
+
+      if (!existingJobType) {
+        return 'Người dùng không tồn tại';
+      }
+
+      // Delete the user
+      await this.prisma.loaiCongViec.delete({
+        where: {
+          id: jobTypeId,
+        },
+      });
+
+      return 'Đã xóa loại công việc';
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      return 'Đã xảy ra lỗi khi xóa loại công việc';
+    }
   }
 }

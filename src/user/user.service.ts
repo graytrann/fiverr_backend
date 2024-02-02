@@ -10,11 +10,13 @@ export class UserService {
   constructor(private jwtService: JwtService) {}
   prisma = new PrismaClient();
 
+  // lấy hết người dùng
   async getAllUser(): Promise<NguoiDung[]> {
     const allUser = await this.prisma.nguoiDung.findMany();
     return allUser;
   }
 
+  // thêm người dùng
   async addUser(body: {
     uname: string;
 
@@ -60,6 +62,53 @@ export class UserService {
     return `Đã thêm mới người dùng`;
   }
 
+  async updateUser(
+    id: number,
+    body: {
+      uname?: string;
+      email?: string;
+      pass_word?: string;
+      phone?: string;
+      birth_day?: string;
+      gender?: string;
+      role?: string;
+      skill?: string;
+      certification?: string;
+    },
+  ): Promise<string> {
+    const existingUser = await this.prisma.nguoiDung.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!existingUser) {
+      return 'Người dùng không tồn tại';
+    }
+
+    const updatedUser = await this.prisma.nguoiDung.update({
+      where: {
+        id: id,
+      },
+      data: {
+        uname: body.uname || existingUser.uname,
+        email: body.email || existingUser.email,
+        pass_word: body.pass_word
+          ? await bcrypt.hash(body.pass_word, 10)
+          : existingUser.pass_word,
+        phone: body.phone || existingUser.phone,
+        birth_day: body.birth_day || existingUser.birth_day,
+        gender: body.gender || existingUser.gender,
+        role: body.role || existingUser.role,
+        skill: body.skill || existingUser.skill,
+        certification: body.certification || existingUser.certification,
+      },
+    });
+
+    return 'Người dùng đã được cập nhật';
+  }
+
+  // lấy người dùng theo ID
   async getUserById(userId: number): Promise<NguoiDung | null> {
     const user = await this.prisma.nguoiDung.findUnique({
       where: {
@@ -68,14 +117,30 @@ export class UserService {
     });
     return user;
   }
-  // THÊM LOẠI CÔNG VIỆC
-  
-  async addJobType(body: { ten_loai_cong_viec: string }): Promise<string> {
-    const newJobType = await this.prisma.loaiCongViec.create({
-      data: {
-        ten_loai_cong_viec: body.ten_loai_cong_viec,
-      },
-    });
-    return `Đã thêm mới loại công việc :${body.ten_loai_cong_viec}`;
+
+  // Xóa người dùng
+  async deleteUser(userId: number): Promise<string> {
+    try {
+      const existingUser = await this.prisma.nguoiDung.findUnique({
+        where: {
+          id: userId,
+        },
+      });
+
+      if (!existingUser) {
+        return 'Người dùng không tồn tại';
+      }
+
+      await this.prisma.nguoiDung.delete({
+        where: {
+          id: userId,
+        },
+      });
+
+      return 'Đã xóa người dùng';
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      return 'Đã xảy ra lỗi khi xóa người dùng';
+    }
   }
 }

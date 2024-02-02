@@ -7,6 +7,8 @@ import {
   Headers,
   UnauthorizedException,
   UseGuards,
+  Put,
+  Delete,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import {
@@ -35,7 +37,7 @@ class user {
   phone: string;
 
   @ApiProperty()
-  birthday: string;
+  birth_day: string;
 
   @ApiProperty()
   gender: string;
@@ -93,14 +95,71 @@ export class UserController {
     }
   }
 
+  // THÊM NGƯỜI DÙNG MỚI
+  @ApiBody({
+    type: user,
+  })
+  @Post('add')
+  addJobType(@Body() body: any) {
+    return this.userService.addUser(body);
+  }
+
+  // SỬA THÔNG TIN NGƯỜI DÙNG
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
-  @Get('ye')
-  async yourEndpoint(@Headers('Authorization') customHeader: string) {
-    // Your logic here
-    await console.log('Custom Header:', customHeader);
+  @ApiBody({
+    type: user,
+  })
+  @Put('update')
+  updateUser(@Headers('Authorization') authHeader: string, @Body() body: any) {
+    // Kiểm tra xem header có tồn tại không
+    if (!authHeader) {
+      throw new UnauthorizedException('Missing authorization header');
+    }
 
-    // Return your response
-    return { message: 'Received custom header' };
+    // Lấy token từ header
+    const token = authHeader.replace('Bearer ', '');
+
+    try {
+      // Giải mã token
+      const decodedToken = this.jwtService.verify(token, { secret: 'BI_MAT' });
+
+      // Lấy userId từ thông tin giải mã
+      const userId = decodedToken.data.userId;
+
+      // Gọi service để lấy thông tin user
+      return this.userService.updateUser(userId, body);
+    } catch (error) {
+      // Xử lý lỗi khi giải mã không thành công
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
+
+  // XÓA NGƯỜI DÙNG
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('delete')
+  deleteUser(@Headers('Authorization') authHeader: string) {
+    // Kiểm tra xem header có tồn tại không
+    if (!authHeader) {
+      throw new UnauthorizedException('Missing authorization header');
+    }
+
+    // Lấy token từ header
+    const token = authHeader.replace('Bearer ', '');
+
+    try {
+      // Giải mã token
+      const decodedToken = this.jwtService.verify(token, { secret: 'BI_MAT' });
+
+      // Lấy userId từ thông tin giải mã
+      const userId = decodedToken.data.userId;
+
+      // Gọi service để lấy thông tin user
+      return this.userService.deleteUser(userId);
+    } catch (error) {
+      // Xử lý lỗi khi giải mã không thành công
+      throw new UnauthorizedException('Invalid token');
+    }
   }
 }

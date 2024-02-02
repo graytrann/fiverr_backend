@@ -24,7 +24,7 @@ export class AuthService {
     email: string;
     pass_word: string;
     phone: string;
-    birthday: string;
+    birth_day: string;
     gender: string;
     role: string;
     skill: string;
@@ -51,7 +51,7 @@ export class AuthService {
         email: body.email,
         pass_word: hashedPassword,
         phone: body.phone,
-        birth_day: body.birthday,
+        birth_day: body.birth_day,
         gender: body.gender,
         role: body.role,
         skill: body.skill,

@@ -27,7 +27,7 @@ class newUser {
   phone: string;
 
   @ApiProperty()
-  birthday: string;
+  birth_day: string;
 
   @ApiProperty()
   gender: string;
@@ -73,6 +73,4 @@ export class AuthController {
   signIn(@Body() body: any) {
     return this.authService.signIn(body);
   }
-
- 
 }

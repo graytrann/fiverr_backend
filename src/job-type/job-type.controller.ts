@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { JobTypeService } from './job-type.service';
 import { ApiBody, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { query } from 'express';
@@ -55,5 +63,13 @@ export class JobTypeController {
       updatedData,
     );
     return result;
+  }
+
+  // XÓA LOẠI CÔNG VIỆC
+  @ApiQuery({ name: 'jobTypeId', type: 'number' })
+  @Delete('delete')
+  deleteJobType(@Query('jobTypeId') jobTypeId: string) {
+    const parsedJobTypeId = parseInt(jobTypeId, 10); // Sử dụng parseInt để chuyển đổi chuỗi thành số
+    return this.jobTypeService.deteleJobType(parsedJobTypeId);
   }
 }
