@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UseGuards } from '@nestjs/common';
 import { PrismaClient, NguoiDung } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Injectable()
 export class UserService {
@@ -58,8 +60,6 @@ export class UserService {
     return `Đã thêm mới người dùng`;
   }
 
-  
-
   async getUserById(userId: number): Promise<NguoiDung | null> {
     const user = await this.prisma.nguoiDung.findUnique({
       where: {
@@ -69,6 +69,7 @@ export class UserService {
     return user;
   }
   // THÊM LOẠI CÔNG VIỆC
+  
   async addJobType(body: { ten_loai_cong_viec: string }): Promise<string> {
     const newJobType = await this.prisma.loaiCongViec.create({
       data: {

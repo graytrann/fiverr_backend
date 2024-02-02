@@ -6,9 +6,11 @@ import {
   Query,
   Headers,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiHeader,
   ApiProperty,
@@ -17,6 +19,7 @@ import {
 } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { AuthGuard } from '@nestjs/passport';
 
 class user {
   @ApiProperty()
@@ -63,9 +66,10 @@ export class UserController {
   }
 
   // LẤY NGƯỜI DÙNG THEO ID
-
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @Get('getById')
-  getUserById(@Headers('authorization') authHeader: string) {
+  getUserById(@Headers('Authorization') authHeader: string) {
     // Kiểm tra xem header có tồn tại không
     if (!authHeader) {
       throw new UnauthorizedException('Missing authorization header');
@@ -87,5 +91,16 @@ export class UserController {
       // Xử lý lỗi khi giải mã không thành công
       throw new UnauthorizedException('Invalid token');
     }
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Get('ye')
+  async yourEndpoint(@Headers('Authorization') customHeader: string) {
+    // Your logic here
+    await console.log('Custom Header:', customHeader);
+
+    // Return your response
+    return { message: 'Received custom header' };
   }
 }

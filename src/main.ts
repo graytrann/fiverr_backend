@@ -10,7 +10,11 @@ async function bootstrap() {
   app.use(express.static('.'));
 
   //SWAGGER
-  const config = new DocumentBuilder().setTitle('Fiverr').build();
+  const config = new DocumentBuilder()
+    .setTitle('Fiverr')
+    .addBearerAuth()
+    .build();
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('/swagger', app, document);
   await app.listen(8080);
