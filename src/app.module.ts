@@ -7,6 +7,7 @@ import { CommentModule } from './comment/comment.module';
 import { JobTypeModule } from './job-type/job-type.module';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { UserModule } from './user/user.module';
+import { JobDetailModule } from './job-detail/job-detail.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { UserModule } from './user/user.module';
     CommentModule,
     JobTypeModule,
     UserModule,
+    JobDetailModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],

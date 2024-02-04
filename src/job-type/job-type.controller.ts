@@ -37,7 +37,7 @@ export class JobTypeController {
   }
 
   // LẤY HẾT LOẠI CÔNG VIỆC
-  @Get('get')
+  @Get('get-all')
   getAllJobType() {
     return this.jobTypeService.getAllJobType();
   }

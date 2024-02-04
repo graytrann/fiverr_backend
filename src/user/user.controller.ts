@@ -62,7 +62,7 @@ export class UserController {
   ) {}
 
   // LẤY HẾT NGƯỜI DÙNG
-  @Get('get')
+  @Get('get-all')
   getAllUser() {
     return this.userService.getAllUser();
   }
