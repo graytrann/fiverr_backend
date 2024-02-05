@@ -54,7 +54,7 @@ export class JobTypeService {
       });
 
       if (!existingJobType) {
-        return 'Người dùng không tồn tại';
+        return 'Loại công việc không tồn tại';
       }
 
       // Delete the user
