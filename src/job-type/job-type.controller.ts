@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { JobTypeService } from './job-type.service';
 import { ApiBody, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { query } from 'express';
 import { LoaiCongViec } from '@prisma/client';
 
 class newJobType {
@@ -46,13 +45,13 @@ export class JobTypeController {
   @ApiQuery({ name: 'jobTypeId', type: 'number' })
   @Get('getById')
   getJobTypeById(@Query('jobTypeId') jobTypeId: string) {
-    const parsedJobTypeId = parseInt(jobTypeId, 10); // Sử dụng parseInt để chuyển đổi chuỗi thành số
+    const parsedJobTypeId = parseInt(jobTypeId, 10);
     return this.jobTypeService.getJobTypeById(parsedJobTypeId);
   }
 
   // SỬA LOẠI CÔNG VIỆC
-  @ApiBody({ type: newJobType }) // Giả sử newJobType là kiểu dữ liệu của dữ liệu cần cập nhật
-  @Put('updateById') // Sử dụng phương thức PUT để cập nhật dữ liệu
+  @ApiBody({ type: newJobType })
+  @Put('update')
   async updateJobType(
     @Query('jobTypeId') jobTypeId: string,
     @Body() updatedData: Partial<LoaiCongViec>, // Sử dụng Partial để chấp nhận các trường tùy chọn

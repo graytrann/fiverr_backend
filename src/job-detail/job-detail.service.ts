@@ -75,6 +75,7 @@ export class JobDetailService {
     const updatedJobDetail = await this.prisma.chiTietLoaiCongViec.update({
       where: { id: jobDetailId },
       data: dataToUpdate,
+      
     });
 
     return updatedJobDetail;

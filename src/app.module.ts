@@ -9,6 +9,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 import { UserModule } from './user/user.module';
 import { JobDetailModule } from './job-detail/job-detail.module';
 import { JobModule } from './job/job.module';
+import { HireJobModule } from './hire-job/hire-job.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { JobModule } from './job/job.module';
     UserModule,
     JobDetailModule,
     JobModule,
+    HireJobModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],
